@@ -22,7 +22,7 @@ public class CreateConecction {
     String password = null;
 
 public CreateConecction(){
-    String path ="C:\\Users\\ixpat\\Contacts\\Documents\\NetBeansProjects\\parcial_2\\src\\conexion\\db_config.properties";
+    String path ="C:\\Users\\ixpat\\Contacts\\Documents\\NetBeansProjects\\Proyecto_final\\src\\conexion\\db_config.properties";
     InputStream in = null;
     
         try{
