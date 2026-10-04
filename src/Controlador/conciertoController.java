@@ -5,6 +5,7 @@
 package Controlador;
 import dao.ConciertoDao;
 import modelo.Concierto;
+import java.util.List;
 
 
 /**
@@ -13,7 +14,10 @@ import modelo.Concierto;
  */
 public class conciertoController {
      private ConciertoDao conciertoDao;
-
+    
+     public List<Concierto> listar() {
+        return conciertoDao.listar();
+    }
     public conciertoController() {
         conciertoDao = new ConciertoDao();
     }

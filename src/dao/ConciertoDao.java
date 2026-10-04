@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -19,6 +21,56 @@ import java.sql.SQLException;
 public class ConciertoDao {
     
     CreateConecction connFactory = new CreateConecction();
+    public List<Concierto> listar() {
+
+        List<Concierto> lista = new ArrayList<>();
+
+        String sql = "SELECT * FROM conciertos ORDER BY id_concierto";
+
+        try {
+
+            CreateConecction conexion = new CreateConecction();
+            Connection conn = conexion.getConecction();
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                Concierto concierto = new Concierto();
+
+                concierto.setIdConcierto(
+                        rs.getInt("id_concierto"));
+
+                concierto.setIdArtista(
+                        rs.getInt("id_artista"));
+
+                concierto.setTituloEvento(
+                        rs.getString("titulo_evento"));
+
+                concierto.setFechaConcierto(
+                        rs.getString("fecha_concierto"));
+
+                concierto.setRecinto(
+                        rs.getString("recinto"));
+
+                concierto.setEstado(
+                        rs.getString("estado"));
+
+                lista.add(concierto);
+            }
+
+            rs.close();
+            ps.close();
+            conn.close();
+
+        } catch (SQLException ex) {
+
+            System.out.println(ex.getMessage());
+        }
+
+        return lista;
+    }
     
     public boolean guardar(Concierto concierto){
         String sql = "INSERT INTO conciertos "
