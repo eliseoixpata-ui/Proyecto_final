@@ -25,20 +25,26 @@ public class jpConcierto extends javax.swing.JPanel {
     private ArtistaDao artistaDao;
     private List<Artistas> listaArtistas;
     private TableRowSorter<DefaultTableModel> sorter;
-   public jpConcierto() {
-          initComponents();
-
-        conciertoController =
-                new conciertoController();
-
-        artistaDao =
-                new ArtistaDao();
-
-        cargarArtistas();
-
-        cargarTabla();
+   
+    public jpConcierto() {
+        initComponents();
         
-        configurarBusqueda();
+
+            txtID.setEditable(false);
+            txtID.setText("Automático");
+
+            cmbxEstado.removeAllItems();
+            cmbxEstado.addItem("programado");
+            cmbxEstado.addItem("activo");
+            cmbxEstado.addItem("finalizado");
+            cmbxEstado.addItem("cancelado");
+
+            conciertoController = new conciertoController();
+            artistaDao = new ArtistaDao();
+
+            cargarArtistas();
+            cargarTabla();
+            configurarBusqueda();
     }
     
     private void cargarArtistas() {
@@ -55,26 +61,36 @@ public class jpConcierto extends javax.swing.JPanel {
 
     private void limpiarCampos() {
 
-        txtID.setText("");
-        txtTituloEvento.setText("");
-        txtFechaConcierto.setText("");
-        txtRecinto.setText("");
+       initComponents();
 
-        if (cmbxArtista.getItemCount() > 0) {
-            cmbxArtista.setSelectedIndex(0);
-        }
+        txtID.setEditable(false);
+        txtID.setText("Automático");
 
-        cmbxEstado.setSelectedIndex(0);
+        cmbxEstado.removeAllItems();
+        cmbxEstado.addItem("programado");
+        cmbxEstado.addItem("activo");
+        cmbxEstado.addItem("finalizado");
+        cmbxEstado.addItem("cancelado");
+
+        conciertoController = new conciertoController();
+        artistaDao = new ArtistaDao();
+
+        cargarArtistas();
+        cargarTabla();
+        configurarBusqueda();
     }
     private void cargarTabla() {
 
         DefaultTableModel modelo =
-                (DefaultTableModel) tblConciertos.getModel();
+            (DefaultTableModel) tblConciertos.getModel();
+
+        modelo.setColumnIdentifiers(new Object[]{
+            "ID", "Artista", "Título", "Fecha", "Recinto", "Estado"
+        });
 
         modelo.setRowCount(0);
 
-        List<Concierto> lista =
-                conciertoController.listar();
+        List<Concierto> lista = conciertoController.listar();
 
         for (Concierto concierto : lista) {
 
@@ -82,27 +98,22 @@ public class jpConcierto extends javax.swing.JPanel {
 
             for (Artistas artista : listaArtistas) {
 
-                if (artista.getIdArtista()
-                        == concierto.getIdArtista()) {
-
-                    nombreArtista =
-                            artista.getNombreArtistico();
-
+                if (artista.getIdArtista() == concierto.getIdArtista()) {
+                    nombreArtista = artista.getNombreArtistico();
                     break;
                 }
             }
 
-            Object[] fila = {
-
+            modelo.addRow(new Object[]{
                 concierto.getIdConcierto(),
                 nombreArtista,
                 concierto.getTituloEvento(),
                 concierto.getFechaConcierto(),
                 concierto.getRecinto(),
                 concierto.getEstado()
-            };
-
-            modelo.addRow(fila);
+            });
+            tblConciertos.setModel(modelo);
+            configurarBusqueda();
         }
     }
     private void configurarBusqueda() {
@@ -164,26 +175,30 @@ public class jpConcierto extends javax.swing.JPanel {
         jFrame2 = new javax.swing.JFrame();
         jDialog1 = new javax.swing.JDialog();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
+        jCalendar1 = new com.toedter.calendar.JCalendar();
+        jCalendar2 = new com.toedter.calendar.JCalendar();
         jInternalFrame1 = new javax.swing.JInternalFrame();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jDateChooser2 = new com.toedter.calendar.JDateChooser();
+        jLabel8 = new javax.swing.JLabel();
+        txtTituloEvento = new javax.swing.JTextField();
+        btnNuevo = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        cmbxMinutos = new javax.swing.JComboBox<>();
+        btnActualizar = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
+        txtBuscar = new javax.swing.JTextField();
+        btnEliminar = new javax.swing.JButton();
+        txtRecinto = new javax.swing.JTextField();
+        btnGuardar = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
         cmbxArtista = new javax.swing.JComboBox<>();
         cmbxEstado = new javax.swing.JComboBox<>();
-        txtBuscar = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        cbxHora = new javax.swing.JComboBox<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
         tblConciertos = new javax.swing.JTable();
         txtID = new javax.swing.JTextField();
-        btnNuevo = new javax.swing.JButton();
-        btnGuardar = new javax.swing.JButton();
-        btnActualizar = new javax.swing.JButton();
-        btnEliminar = new javax.swing.JButton();
-        txtTituloEvento = new javax.swing.JTextField();
-        txtFechaConcierto = new javax.swing.JTextField();
-        txtRecinto = new javax.swing.JTextField();
+        jLabel12 = new javax.swing.JLabel();
 
         javax.swing.GroupLayout jFrame1Layout = new javax.swing.GroupLayout(jFrame1.getContentPane());
         jFrame1.getContentPane().setLayout(jFrame1Layout);
@@ -226,24 +241,44 @@ public class jpConcierto extends javax.swing.JPanel {
         jInternalFrame1.setRequestFocusEnabled(false);
         jInternalFrame1.setVisible(true);
 
-        jLabel1.setText("ID:");
+        javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
+        jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
+        jInternalFrame1Layout.setHorizontalGroup(
+            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 409, Short.MAX_VALUE)
+        );
+        jInternalFrame1Layout.setVerticalGroup(
+            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
 
-        jLabel2.setText("Artista:");
+        jLabel7.setText("Estado");
 
-        jLabel3.setText("Titulo del Evento");
+        jLabel8.setText("Artista:");
 
-        jLabel4.setText("Fecha de concierto");
+        btnNuevo.setText("Nuevo");
 
-        jLabel5.setText("Recinto");
+        jLabel9.setText("ID:");
 
-        jLabel6.setText("Estado");
+        cmbxMinutos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        btnActualizar.setText("Actualizar");
+
+        jLabel10.setText("Recinto");
+
+        txtBuscar.setText("Bucar concierto...                                                   ");
+
+        btnEliminar.setText("Eliminar");
+
+        btnGuardar.setText("Guardar");
+
+        jLabel11.setText("Fecha de concierto");
 
         cmbxArtista.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         cmbxEstado.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        txtBuscar.setText("Bucar concierto...                                                   ");
-        txtBuscar.addActionListener(this::txtBuscarActionPerformed);
+        cbxHora.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         tblConciertos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -256,289 +291,111 @@ public class jpConcierto extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tblConciertos.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblConciertosMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(tblConciertos);
+        jScrollPane2.setViewportView(tblConciertos);
 
         txtID.setText("Automatico");
+        txtID.addActionListener(this::txtIDActionPerformed);
 
-        btnNuevo.setText("Nuevo");
-        btnNuevo.addActionListener(this::btnNuevoActionPerformed);
-
-        btnGuardar.setText("Guardar");
-        btnGuardar.addActionListener(this::btnGuardarActionPerformed);
-
-        btnActualizar.setText("Actualizar");
-        btnActualizar.addActionListener(this::btnActualizarActionPerformed);
-
-        btnEliminar.setText("Eliminar");
-        btnEliminar.addActionListener(this::btnEliminarActionPerformed);
-
-        javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
-        jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
-        jInternalFrame1Layout.setHorizontalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jInternalFrame1Layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(jInternalFrame1Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(130, 130, 130)
-                        .addComponent(txtRecinto))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jInternalFrame1Layout.createSequentialGroup()
-                        .addComponent(btnNuevo)
-                        .addGap(24, 24, 24)
-                        .addComponent(btnGuardar)
-                        .addGap(28, 28, 28)
-                        .addComponent(btnActualizar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
-                        .addComponent(btnEliminar))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jInternalFrame1Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(txtBuscar, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jInternalFrame1Layout.createSequentialGroup()
-                        .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4))
-                        .addGap(70, 70, 70)
-                        .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtFechaConcierto)
-                            .addComponent(txtTituloEvento)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jInternalFrame1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addGap(38, 38, 38))
-                    .addGroup(jInternalFrame1Layout.createSequentialGroup()
-                        .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel1))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cmbxEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cmbxArtista, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(20, Short.MAX_VALUE))
-        );
-        jInternalFrame1Layout.setVerticalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jInternalFrame1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(cmbxArtista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtTituloEvento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtFechaConcierto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(txtRecinto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(cmbxEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnNuevo)
-                    .addComponent(btnGuardar)
-                    .addComponent(btnActualizar)
-                    .addComponent(btnEliminar))
-                .addGap(18, 18, 18)
-                .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(47, 47, 47))
-        );
+        jLabel12.setText("Titulo del Evento");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jInternalFrame1, javax.swing.GroupLayout.DEFAULT_SIZE, 437, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel9)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel12)
+                                .addComponent(jLabel11)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel7)
+                                    .addComponent(jLabel10)))
+                            .addGap(44, 44, 44)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(cmbxMinutos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(cbxHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txtRecinto)
+                                .addComponent(txtTituloEvento)
+                                .addComponent(cmbxArtista, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtID)
+                                .addComponent(cmbxEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addGap(4, 4, 4)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                    .addComponent(txtBuscar)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(104, 104, 104)
+                                        .addComponent(btnGuardar)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btnActualizar)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnEliminar)))
+                                .addComponent(btnNuevo, javax.swing.GroupLayout.Alignment.LEADING)))))
+                .addContainerGap(394, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, 421, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jInternalFrame1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(cmbxArtista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtTituloEvento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel12))
+                .addGap(21, 21, 21)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cmbxMinutos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel11)
+                        .addComponent(cbxHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel10)
+                    .addComponent(txtRecinto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel7)
+                    .addComponent(cmbxEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnActualizar)
+                        .addComponent(btnEliminar)
+                        .addComponent(btnGuardar))
+                    .addComponent(btnNuevo))
+                .addGap(18, 18, 18)
+                .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 12, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscarActionPerformed
+    private void txtIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIDActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtBuscarActionPerformed
-
-    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        int posicion = cmbxArtista.getSelectedIndex();
-
-        if (posicion == -1) {
-            JOptionPane.showMessageDialog(this,
-                    "Seleccione un artista");
-            return;
-        }
-
-        Artistas artista = listaArtistas.get(posicion);
-
-        Concierto concierto = new Concierto();
-
-        concierto.setIdArtista(artista.getIdArtista());
-        concierto.setTituloEvento(txtTituloEvento.getText());
-        concierto.setFechaConcierto(txtFechaConcierto.getText());
-        concierto.setRecinto(txtRecinto.getText());
-        concierto.setEstado(cmbxEstado.getSelectedItem().toString());
-
-        boolean resultado = conciertoController.guardar(concierto);
-
-        if (resultado) {
-
-            JOptionPane.showMessageDialog(this,
-                    "Concierto guardado correctamente");
-
-            limpiarCampos();
-
-        } else {
-
-            JOptionPane.showMessageDialog(this,
-                    "Error al guardar el concierto");
-        }
-    }//GEN-LAST:event_btnGuardarActionPerformed
-
-    private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
-        limpiarCampos();
-    }//GEN-LAST:event_btnNuevoActionPerformed
-
-    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
-        if (txtID.getText().isEmpty()) {
-
-            JOptionPane.showMessageDialog(this,
-                    "Seleccione un concierto");
-
-            return;
-        }
-
-        int posicion = cmbxArtista.getSelectedIndex();
-
-        if (posicion == -1) {
-            JOptionPane.showMessageDialog(this,
-                    "Seleccione un artista");
-            return;
-        }
-
-        Artistas artista = listaArtistas.get(posicion);
-
-        Concierto concierto = new Concierto();
-
-        concierto.setIdConcierto(
-                Integer.parseInt(txtID.getText()));
-
-        concierto.setIdArtista(
-                artista.getIdArtista());
-
-        concierto.setTituloEvento(
-                txtTituloEvento.getText());
-
-        concierto.setFechaConcierto(
-                txtFechaConcierto.getText());
-
-        concierto.setRecinto(
-                txtRecinto.getText());
-
-        concierto.setEstado(
-                cmbxEstado.getSelectedItem().toString());
-
-        boolean resultado =
-                conciertoController.actualizar(concierto);
-
-        if (resultado) {
-
-            JOptionPane.showMessageDialog(this,
-                    "Concierto actualizado correctamente");
-
-            limpiarCampos();
-
-        } else {
-
-            JOptionPane.showMessageDialog(this,
-                    "Error al actualizar");
-        }
-    }//GEN-LAST:event_btnActualizarActionPerformed
-
-    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-         if (txtID.getText().isEmpty()) {
-
-            JOptionPane.showMessageDialog(this,
-                    "Seleccione un concierto");
-
-            return;
-        }
-
-        int respuesta = JOptionPane.showConfirmDialog(
-                this,
-                "¿Desea eliminar este concierto?",
-                "Confirmar",
-                JOptionPane.YES_NO_OPTION
-        );
-
-        if (respuesta == JOptionPane.YES_OPTION) {
-
-            int id = Integer.parseInt(txtID.getText());
-
-            boolean resultado =
-                    conciertoController.eliminar(id);
-
-            if (resultado) {
-
-                JOptionPane.showMessageDialog(this,
-                        "Concierto eliminado correctamente");
-
-                limpiarCampos();
-
-            } else {
-
-                JOptionPane.showMessageDialog(this,
-                        "No se pudo eliminar el concierto");
-            }
-        }
-    }//GEN-LAST:event_btnEliminarActionPerformed
-
-    private void tblConciertosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblConciertosMouseClicked
-           int fila = tblConciertos.getSelectedRow();
-
-        if (fila == -1) {
-            return;
-        }
-
-        txtID.setText(
-                tblConciertos.getValueAt(fila, 0).toString());
-
-        String nombreArtista =
-                tblConciertos.getValueAt(fila, 1).toString();
-
-        cmbxArtista.setSelectedItem(nombreArtista);
-
-        txtTituloEvento.setText(
-                tblConciertos.getValueAt(fila, 2).toString());
-
-        txtFechaConcierto.setText(
-                tblConciertos.getValueAt(fila, 3).toString());
-
-        txtRecinto.setText(
-                tblConciertos.getValueAt(fila, 4).toString());
-
-        cmbxEstado.setSelectedItem(
-                tblConciertos.getValueAt(fila, 5).toString());
-    
-    }//GEN-LAST:event_tblConciertosMouseClicked
+    }//GEN-LAST:event_txtIDActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -546,23 +403,27 @@ public class jpConcierto extends javax.swing.JPanel {
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnNuevo;
+    private javax.swing.JComboBox<String> cbxHora;
     private javax.swing.JComboBox<String> cmbxArtista;
     private javax.swing.JComboBox<String> cmbxEstado;
+    private javax.swing.JComboBox<String> cmbxMinutos;
+    private com.toedter.calendar.JCalendar jCalendar1;
+    private com.toedter.calendar.JCalendar jCalendar2;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
+    private com.toedter.calendar.JDateChooser jDateChooser2;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JFrame jFrame1;
     private javax.swing.JFrame jFrame2;
     private javax.swing.JInternalFrame jInternalFrame1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tblConciertos;
     private javax.swing.JTextField txtBuscar;
-    private javax.swing.JTextField txtFechaConcierto;
     private javax.swing.JTextField txtID;
     private javax.swing.JTextField txtRecinto;
     private javax.swing.JTextField txtTituloEvento;
