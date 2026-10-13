@@ -65,6 +65,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         btnInicio.setText("Inicio");
 
         btnArtistas.setText("Artistas");
+        btnArtistas.addActionListener(this::btnArtistasActionPerformed);
 
         btnConciertos.setText("Conciertos");
         btnConciertos.addActionListener(this::btnConciertosActionPerformed);
@@ -79,6 +80,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         btnReportes.setText("Reportes");
 
         btnUsuarios.setText("Usuarios");
+        btnUsuarios.addActionListener(this::btnUsuariosActionPerformed);
 
         btnSalir.setText("Salir");
         btnSalir.addActionListener(this::btnSalirActionPerformed);
@@ -183,6 +185,17 @@ public class MenuPrincipal extends javax.swing.JFrame {
        
        mostrarPanel(localidad);
     }//GEN-LAST:event_btnLocalidadesActionPerformed
+
+    private void btnArtistasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnArtistasActionPerformed
+        jpArtista Artista = new jpArtista();
+       
+       mostrarPanel(Artista);
+    }//GEN-LAST:event_btnArtistasActionPerformed
+
+    private void btnUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuariosActionPerformed
+        jpUsuario usuario = new jpUsuario();
+        mostrarPanel (usuario);
+    }//GEN-LAST:event_btnUsuariosActionPerformed
 
     /**
      * @param args the command line arguments
