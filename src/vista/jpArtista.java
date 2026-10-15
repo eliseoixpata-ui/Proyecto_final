@@ -31,7 +31,7 @@ public jpArtista() {
     artistaController = new ArtistaController();
 
     txtID.setEditable(false);
-    txtID.setText("");
+    txtID.setText("Automatico");
 
     cargarTabla();
 
@@ -54,10 +54,12 @@ public jpArtista() {
 
 private void limpiarCampos() {
 
-    jLabel2.setText("");
-    lblNombreArtistico.setText("");
-    lblGeneroMusical.setText("");
-    lblPaisOrigen.setText("");
+    txtID.setText("Automático");
+    txtNombreArtistico.setText("");
+    txtGeneroMusical.setText("");
+    txtPaisOrigen.setText("");
+
+    tblArtistas.clearSelection();
 }
 
 
@@ -119,8 +121,7 @@ private void filtrar() {
 
     String texto = txtBuscar.getText().trim();
 
-    if (texto.isEmpty()
-            || texto.equalsIgnoreCase("Buscar Artista...")) {
+    if (texto.isEmpty()) {
 
         sorter.setRowFilter(null);
 
@@ -128,12 +129,13 @@ private void filtrar() {
 
         sorter.setRowFilter(
                 RowFilter.regexFilter(
-                        "(?i)" + Pattern.quote(texto)
+                        "(?i)" + Pattern.quote(texto),
+                        0,
+                        1
                 )
         );
     }
 }
-
 
 private void nuevoArtista() {
 
@@ -145,38 +147,40 @@ private void nuevoArtista() {
 
 private void guardarArtista() {
 
-    if (lblNombreArtistico.getText().trim().isEmpty()) {
+    if (txtNombreArtistico.getText().trim().isEmpty()) {
 
         JOptionPane.showMessageDialog(
                 this,
                 "Ingrese el nombre artístico"
         );
 
+        txtNombreArtistico.requestFocus();
         return;
     }
 
-    if (lblGeneroMusical.getText().trim().isEmpty()) {
+    if (txtGeneroMusical.getText().trim().isEmpty()) {
 
         JOptionPane.showMessageDialog(
                 this,
                 "Ingrese el género musical"
         );
 
+        txtGeneroMusical.requestFocus();
         return;
     }
 
     Artistas artista = new Artistas();
 
     artista.setNombreArtistico(
-            lblNombreArtistico.getText().trim()
+            txtNombreArtistico.getText().trim()
     );
 
     artista.setGeneroMusical(
-            lblGeneroMusical.getText().trim()
+            txtGeneroMusical.getText().trim()
     );
 
     artista.setPaisOrigen(
-            lblPaisOrigen.getText().trim()
+            txtPaisOrigen.getText().trim()
     );
 
     boolean resultado =
@@ -204,17 +208,18 @@ private void guardarArtista() {
 
 private void actualizarArtista() {
 
-    if (jLabel2.getText().trim().isEmpty()) {
+    if (txtID.getText().trim().isEmpty()
+            || txtID.getText().equalsIgnoreCase("Automático")) {
 
         JOptionPane.showMessageDialog(
                 this,
-                "Seleccione un artista"
+                "Seleccione un artista de la tabla"
         );
 
         return;
     }
 
-    if (lblNombreArtistico.getText().trim().isEmpty()) {
+    if (txtNombreArtistico.getText().trim().isEmpty()) {
 
         JOptionPane.showMessageDialog(
                 this,
@@ -224,22 +229,32 @@ private void actualizarArtista() {
         return;
     }
 
+    if (txtGeneroMusical.getText().trim().isEmpty()) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Ingrese el género musical"
+        );
+
+        return;
+    }
+
     Artistas artista = new Artistas();
 
     artista.setIdArtista(
-            Integer.parseInt(jLabel2.getText())
+            Integer.parseInt(txtID.getText())
     );
 
     artista.setNombreArtistico(
-            lblNombreArtistico.getText().trim()
+            txtNombreArtistico.getText().trim()
     );
 
     artista.setGeneroMusical(
-            lblGeneroMusical.getText().trim()
+            txtGeneroMusical.getText().trim()
     );
 
     artista.setPaisOrigen(
-            lblPaisOrigen.getText().trim()
+            txtPaisOrigen.getText().trim()
     );
 
     boolean resultado =
@@ -264,14 +279,14 @@ private void actualizarArtista() {
     }
 }
 
-
 private void eliminarArtista() {
 
-    if (jLabel2.getText().trim().isEmpty()) {
+    if (txtID.getText().trim().isEmpty()
+            || txtID.getText().equalsIgnoreCase("Automático")) {
 
         JOptionPane.showMessageDialog(
                 this,
-                "Seleccione un artista"
+                "Seleccione un artista de la tabla"
         );
 
         return;
@@ -288,7 +303,7 @@ private void eliminarArtista() {
     if (respuesta == JOptionPane.YES_OPTION) {
 
         int id =
-                Integer.parseInt(jLabel2.getText());
+                Integer.parseInt(txtID.getText());
 
         boolean resultado =
                 artistaController.eliminar(id);
@@ -329,22 +344,22 @@ private void seleccionarArtista() {
     DefaultTableModel modelo =
             (DefaultTableModel) tblArtistas.getModel();
 
-    jLabel2.setText(
+    txtID.setText(
             modelo.getValueAt(fila, 0).toString()
     );
 
-    lblNombreArtistico.setText(
+    txtNombreArtistico.setText(
             modelo.getValueAt(fila, 1).toString()
     );
 
-    lblGeneroMusical.setText(
+    txtGeneroMusical.setText(
             modelo.getValueAt(fila, 2).toString()
     );
 
     Object pais =
             modelo.getValueAt(fila, 3);
 
-    lblPaisOrigen.setText(
+    txtPaisOrigen.setText(
             pais == null ? "" : pais.toString()
     );
 }
@@ -382,6 +397,7 @@ private void seleccionarArtista() {
         jScrollPane3 = new javax.swing.JScrollPane();
         tblArtistas = new javax.swing.JTable();
         txtBuscar = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -450,7 +466,7 @@ private void seleccionarArtista() {
         jScrollPane3.setViewportView(tblArtistas);
         tblArtistas.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-        txtBuscar.setText("Buscar Artista...");
+        jLabel3.setText("Buscar:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -464,7 +480,9 @@ private void seleccionarArtista() {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(layout.createSequentialGroup()
                             .addContainerGap()
-                            .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                             .addGap(15, 15, 15)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -519,8 +537,10 @@ private void seleccionarArtista() {
                     .addComponent(btnActualizar)
                     .addComponent(btnEliminar))
                 .addGap(18, 18, 18)
-                .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(19, 19, 19))
         );
@@ -534,6 +554,7 @@ private void seleccionarArtista() {
     private javax.swing.JButton btnNuevo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
