@@ -135,7 +135,7 @@ public class Menu extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        pnlContenido.setBackground(new java.awt.Color(51, 153, 255));
+        pnlContenido.setBackground(new java.awt.Color(204, 255, 255));
 
         javax.swing.GroupLayout pnlContenidoLayout = new javax.swing.GroupLayout(pnlContenido);
         pnlContenido.setLayout(pnlContenidoLayout);
