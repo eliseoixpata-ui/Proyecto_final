@@ -73,6 +73,7 @@ public class MenuPrincipal extends javax.swing.JFrame {
         btnLocalidades.addActionListener(this::btnLocalidadesActionPerformed);
 
         btnInventario.setText("Inventario");
+        btnInventario.addActionListener(this::btnInventarioActionPerformed);
 
         btnVentas.setText("Ventas");
 
@@ -183,6 +184,10 @@ public class MenuPrincipal extends javax.swing.JFrame {
        
        mostrarPanel(localidad);
     }//GEN-LAST:event_btnLocalidadesActionPerformed
+
+    private void btnInventarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInventarioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnInventarioActionPerformed
 
     /**
      * @param args the command line arguments

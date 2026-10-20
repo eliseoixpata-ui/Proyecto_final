@@ -122,6 +122,32 @@ public class InventarioBoletosDao{
            return false;
        }       
     }
+    public boolean eliminar(int idInventario) {
+
+        String sql = "DELETE FROM inventario_boletos WHERE id_inventario = ?";
+
+        try {
+
+            CreateConecction conexion = new CreateConecction();
+            Connection conn = conexion.getConecction();
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setInt(1, idInventario);
+
+            ps.executeUpdate();
+
+            ps.close();
+            conn.close();
+
+            return true;
+
+        } catch (SQLException ex) {
+
+            System.out.println(ex.getMessage());
+            return false;
+        }
+    }
     public InventarioBoleto buscarPorId(int idInventario){
         
         InventarioBoleto inventario = null;
