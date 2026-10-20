@@ -28,6 +28,7 @@ public class jpConcierto extends javax.swing.JPanel {
    
     public jpConcierto() {
         initComponents();
+        configurarHora();
         
 
             txtID.setEditable(false);
@@ -61,23 +62,20 @@ public class jpConcierto extends javax.swing.JPanel {
 
     private void limpiarCampos() {
 
-       initComponents();
-
-        txtID.setEditable(false);
         txtID.setText("Automático");
+        txtTituloEvento.setText("");
+        txtRecinto.setText("");
 
-        cmbxEstado.removeAllItems();
-        cmbxEstado.addItem("programado");
-        cmbxEstado.addItem("activo");
-        cmbxEstado.addItem("finalizado");
-        cmbxEstado.addItem("cancelado");
+        jDateChooser2.setDate(null);
 
-        conciertoController = new conciertoController();
-        artistaDao = new ArtistaDao();
+        cbxHora.setSelectedItem("18");
+        cmbxMinutos.setSelectedItem("00");
 
-        cargarArtistas();
-        cargarTabla();
-        configurarBusqueda();
+        if (cmbxArtista.getItemCount() > 0) {
+            cmbxArtista.setSelectedIndex(0);
+        }
+
+        cmbxEstado.setSelectedItem("programado");
     }
     private void cargarTabla() {
 
@@ -161,7 +159,66 @@ public class jpConcierto extends javax.swing.JPanel {
             );
         }
     }
+    private void configurarHora() {
 
+        cbxHora.removeAllItems();
+        cmbxMinutos.removeAllItems();
+
+        for (int i = 0; i < 24; i++) {
+            cbxHora.addItem(String.format("%02d", i));
+        }
+
+        for (int i = 0; i < 60; i++) {
+            cmbxMinutos.addItem(String.format("%02d", i));
+        }
+
+        cbxHora.setSelectedItem("18 H");
+        cmbxMinutos.setSelectedItem("00 Minuts");
+    }
+    
+    private String obtenerFechaConcierto ( ){
+        java.util.Date fecha = jDateChooser2.getDate(); 
+        
+        if (fecha == null ){
+            JOptionPane.showMessageDialog(
+            this, "seleccione una fecha para el concierto"
+            );
+            return null;
+        }
+        java.text.SimpleDateFormat formato = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        
+        String fechaTexto  = formato.format(fecha);
+        
+        String hora= cbxHora.getSelectedItem ().toString();
+        String minutos = cmbxMinutos.getSelectedItem().toString();
+        
+        return fechaTexto + " "+ hora + ":" + minutos + ":00";
+    }
+
+    private void mostrarFechaConcierto(String fechaTexto) {
+
+        try {
+            java.text.SimpleDateFormat formato =
+                new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            java.util.Date fecha = formato.parse(fechaTexto);
+
+            jDateChooser2.setDate(fecha);
+
+            cbxHora.setSelectedItem(
+                new java.text.SimpleDateFormat("HH").format(fecha)
+            );
+
+            cmbxMinutos.setSelectedItem(
+                new java.text.SimpleDateFormat("mm").format(fecha)
+            );
+
+        } catch (java.text.ParseException e) {
+            javax.swing.JOptionPane.showMessageDialog(
+                this, "Error al cargar la fecha: " + e.getMessage()
+            );
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -177,7 +234,6 @@ public class jpConcierto extends javax.swing.JPanel {
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         jCalendar1 = new com.toedter.calendar.JCalendar();
         jCalendar2 = new com.toedter.calendar.JCalendar();
-        jInternalFrame1 = new javax.swing.JInternalFrame();
         jLabel7 = new javax.swing.JLabel();
         jDateChooser2 = new com.toedter.calendar.JDateChooser();
         jLabel8 = new javax.swing.JLabel();
@@ -236,41 +292,31 @@ public class jpConcierto extends javax.swing.JPanel {
         jCheckBoxMenuItem1.setSelected(true);
         jCheckBoxMenuItem1.setText("jCheckBoxMenuItem1");
 
-        jInternalFrame1.setTitle("Conciertos");
-        jInternalFrame1.setPreferredSize(new java.awt.Dimension(425, 488));
-        jInternalFrame1.setRequestFocusEnabled(false);
-        jInternalFrame1.setVisible(true);
-
-        javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
-        jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
-        jInternalFrame1Layout.setHorizontalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 409, Short.MAX_VALUE)
-        );
-        jInternalFrame1Layout.setVerticalGroup(
-            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
+        setBackground(new java.awt.Color(102, 255, 255));
 
         jLabel7.setText("Estado");
 
         jLabel8.setText("Artista:");
 
         btnNuevo.setText("Nuevo");
+        btnNuevo.addActionListener(this::btnNuevoActionPerformed);
 
         jLabel9.setText("ID:");
 
         cmbxMinutos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         btnActualizar.setText("Actualizar");
+        btnActualizar.addActionListener(this::btnActualizarActionPerformed);
 
         jLabel10.setText("Recinto");
 
         txtBuscar.setText("Bucar concierto...                                                   ");
 
         btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(this::btnEliminarActionPerformed);
 
         btnGuardar.setText("Guardar");
+        btnGuardar.addActionListener(this::btnGuardarActionPerformed);
 
         jLabel11.setText("Fecha de concierto");
 
@@ -291,6 +337,11 @@ public class jpConcierto extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblConciertos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblConciertosMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tblConciertos);
 
         txtID.setText("Automatico");
@@ -303,99 +354,280 @@ public class jpConcierto extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(29, 29, 29)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel8)
-                    .addComponent(jLabel9)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel12)
-                                .addComponent(jLabel11)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jLabel10)))
-                            .addGap(44, 44, 44)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(cmbxMinutos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(cbxHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(txtRecinto)
-                                .addComponent(txtTituloEvento)
-                                .addComponent(cmbxArtista, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtID)
-                                .addComponent(cmbxEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addGap(4, 4, 4)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                                    .addComponent(txtBuscar)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(104, 104, 104)
-                                        .addComponent(btnGuardar)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(btnActualizar)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnEliminar)))
-                                .addComponent(btnNuevo, javax.swing.GroupLayout.Alignment.LEADING)))))
-                .addContainerGap(394, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, 421, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(4, 4, 4)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jLabel12)
+                                    .addComponent(jLabel11)
+                                    .addComponent(jLabel10)
+                                    .addComponent(jLabel7))
+                                .addGap(73, 73, 73)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(cmbxEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtRecinto, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnNuevo)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 134, Short.MAX_VALUE)
+                                .addComponent(btnGuardar)
+                                .addGap(104, 104, 104)
+                                .addComponent(btnActualizar)
+                                .addGap(85, 85, 85)
+                                .addComponent(btnEliminar))
+                            .addComponent(jScrollPane2)
+                            .addComponent(txtBuscar)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel9)
+                        .addGap(163, 163, 163)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cmbxArtista, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtTituloEvento, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(cmbxMinutos, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(cbxHora, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jInternalFrame1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(cmbxArtista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtTituloEvento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12))
-                .addGap(21, 21, 21)
+                .addGap(39, 39, 39)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(cmbxMinutos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel11)
-                        .addComponent(cbxHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel9)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel8)
+                        .addGap(24, 24, 24)
+                        .addComponent(jLabel12)
+                        .addGap(21, 21, 21))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(cmbxArtista, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtTituloEvento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(cmbxMinutos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbxHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel10)
+                        .addGap(27, 27, 27)
+                        .addComponent(jLabel7))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtRecinto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(cmbxEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel10)
-                    .addComponent(txtRecinto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel7)
-                    .addComponent(cmbxEstado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnActualizar)
-                        .addComponent(btnEliminar)
-                        .addComponent(btnGuardar))
-                    .addComponent(btnNuevo))
-                .addGap(18, 18, 18)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnEliminar)
+                            .addComponent(btnNuevo)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnActualizar)
+                            .addComponent(btnGuardar))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 12, Short.MAX_VALUE))
+                .addGap(0, 24, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIDActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtIDActionPerformed
+
+    private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
+        limpiarCampos();
+    }//GEN-LAST:event_btnNuevoActionPerformed
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        try {
+
+            if (cmbxArtista.getSelectedIndex() == -1) {
+                JOptionPane.showMessageDialog(this, "Seleccione un artista");
+                return;
+            }
+
+            if (txtTituloEvento.getText().trim().isEmpty()
+                    || txtRecinto.getText().trim().isEmpty()) {
+
+                JOptionPane.showMessageDialog(this, "Complete todos los campos");
+                return;
+            }
+
+            String fecha = obtenerFechaConcierto();
+
+            if (fecha == null) {
+                return;
+            }
+
+            int indice = cmbxArtista.getSelectedIndex();
+            int idArtista = listaArtistas.get(indice).getIdArtista();
+
+            Concierto concierto = new Concierto();
+
+            concierto.setIdArtista(idArtista);
+            concierto.setTituloEvento(txtTituloEvento.getText().trim());
+            concierto.setFechaConcierto(fecha);
+            concierto.setRecinto(txtRecinto.getText().trim());
+            concierto.setEstado(cmbxEstado.getSelectedItem().toString());
+
+            if (conciertoController.guardar(concierto)) {
+
+                JOptionPane.showMessageDialog(this, "Concierto guardado correctamente");
+
+                cargarTabla();
+                limpiarCampos();
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al guardar el concierto");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+        try {
+
+            if (txtID.getText().equals("Automático")
+                    || txtID.getText().trim().isEmpty()) {
+
+                JOptionPane.showMessageDialog(this, "Seleccione un concierto");
+                return;
+            }
+
+            if (cmbxArtista.getSelectedIndex() == -1
+                    || txtTituloEvento.getText().trim().isEmpty()
+                    || txtRecinto.getText().trim().isEmpty()) {
+
+                JOptionPane.showMessageDialog(this, "Complete todos los campos");
+                return;
+            }
+
+            String fecha = obtenerFechaConcierto();
+
+            if (fecha == null) {
+                return;
+            }
+
+            int id = Integer.parseInt(txtID.getText());
+
+            int indice = cmbxArtista.getSelectedIndex();
+            int idArtista = listaArtistas.get(indice).getIdArtista();
+
+            Concierto concierto = new Concierto();
+
+            concierto.setIdConcierto(id);
+            concierto.setIdArtista(idArtista);
+            concierto.setTituloEvento(txtTituloEvento.getText().trim());
+            concierto.setFechaConcierto(fecha);
+            concierto.setRecinto(txtRecinto.getText().trim());
+            concierto.setEstado(cmbxEstado.getSelectedItem().toString());
+
+            if (conciertoController.actualizar(concierto)) {
+
+                JOptionPane.showMessageDialog(this, "Concierto actualizado correctamente");
+
+                cargarTabla();
+                limpiarCampos();
+
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo actualizar");
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnActualizarActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+         try {
+
+            if (txtID.getText().equals("Automático")
+                    || txtID.getText().trim().isEmpty()) {
+
+                JOptionPane.showMessageDialog(this, "Seleccione un concierto");
+                return;
+            }
+
+            int respuesta = JOptionPane.showConfirmDialog(
+                    this,
+                    "¿Está seguro de eliminar este concierto?",
+                    "Confirmar eliminación",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (respuesta != JOptionPane.YES_OPTION) {
+                return;
+            }
+
+            int id = Integer.parseInt(txtID.getText());
+
+            if (conciertoController.eliminar(id)) {
+
+                JOptionPane.showMessageDialog(this, "Concierto eliminado correctamente");
+
+                cargarTabla();
+                limpiarCampos();
+
+            } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "No se pudo eliminar el concierto. Verifique si tiene registros relacionados."
+                );
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void tblConciertosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblConciertosMouseClicked
+        
+        int fila = tblConciertos.getSelectedRow();
+
+        if (fila == -1) {
+            return;
+        }
+
+        int filaModelo = tblConciertos.convertRowIndexToModel(fila);
+
+        javax.swing.table.TableModel modelo = tblConciertos.getModel();
+
+        txtID.setText(modelo.getValueAt(filaModelo, 0).toString());
+        txtTituloEvento.setText(modelo.getValueAt(filaModelo, 2).toString());
+        txtRecinto.setText(modelo.getValueAt(filaModelo, 4).toString());
+
+        cmbxEstado.setSelectedItem(
+                modelo.getValueAt(filaModelo, 5).toString()
+        );
+
+        String nombreArtista = modelo.getValueAt(filaModelo, 1).toString();
+        cmbxArtista.setSelectedItem(nombreArtista);
+
+        mostrarFechaConcierto(
+                modelo.getValueAt(filaModelo, 3).toString()
+        );
+    }//GEN-LAST:event_tblConciertosMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -414,7 +646,6 @@ public class jpConcierto extends javax.swing.JPanel {
     private javax.swing.JDialog jDialog1;
     private javax.swing.JFrame jFrame1;
     private javax.swing.JFrame jFrame2;
-    private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;

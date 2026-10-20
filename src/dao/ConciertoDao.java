@@ -75,7 +75,7 @@ public class ConciertoDao {
     public boolean guardar(Concierto concierto){
         String sql = "INSERT INTO conciertos "
                     +"(id_artista, titulo_evento, fecha_concierto, recinto, estado) "
-                    +"VALUES (?, ?, ?, ?, ? )";
+                    +"VALUES (?, ?, ?::timestamp, ?, ? )";
         Connection conn = connFactory.getConecction();
         
         try{
